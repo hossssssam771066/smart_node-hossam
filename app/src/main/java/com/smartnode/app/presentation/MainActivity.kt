@@ -7,12 +7,21 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Error
+import androidx.compose.material.icons.filled.Inventory2
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -21,11 +30,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -35,7 +41,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -43,20 +49,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.runtime.CompositionLocalProvider
 import com.smartnode.app.R
-import com.smartnode.app.data.local.SmartNodeDatabase
-import com.smartnode.app.data.local.entity.SchemaProbeEntity
+import com.smartnode.app.domain.repository.AssetRepository
+import com.smartnode.app.domain.repository.IdentityRepository
+import com.smartnode.app.domain.repository.TransactionLogRepository
 import com.smartnode.app.presentation.theme.SmartNodeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    @Inject lateinit var database: SmartNodeDatabase
+    @Inject lateinit var identityRepository: IdentityRepository
+    @Inject lateinit var assetRepository: AssetRepository
+    @Inject lateinit var transactionLogRepository: TransactionLogRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,7 +73,11 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background,
                     ) {
-                        Phase1Screen(database = database)
+                        Phase2Screen(
+                            identityRepository = identityRepository,
+                            assetRepository = assetRepository,
+                            transactionLogRepository = transactionLogRepository,
+                        )
                     }
                 }
             }
@@ -78,17 +88,25 @@ class MainActivity : ComponentActivity() {
 private enum class DbStatus { Loading, Ready, Error }
 
 @Composable
-private fun Phase1Screen(database: SmartNodeDatabase) {
+private fun Phase2Screen(
+    identityRepository: IdentityRepository,
+    assetRepository: AssetRepository,
+    transactionLogRepository: TransactionLogRepository,
+) {
     var status by remember { mutableStateOf(DbStatus.Loading) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val identityCount by identityRepository.observeCount().collectAsState(initial = 0)
+    val assetCount by assetRepository.observeCount().collectAsState(initial = 0)
+    val logCount by transactionLogRepository.observeCount().collectAsState(initial = 0)
+
     LaunchedEffect(Unit) {
         status = try {
-            withContext(Dispatchers.IO) {
-                val dao = database.schemaProbeDao()
-                dao.upsert(SchemaProbeEntity())
-                dao.count()
-            }
+            // Each call below triggers SQLCipher → Room to actually open the
+            // encrypted database; if any DAO is misconfigured this throws and
+            // the UI flips into the error state.
+            identityRepository.findByUid("__probe__")
+            assetRepository.findByBarcode("__probe__")
             DbStatus.Ready
         } catch (t: Throwable) {
             errorMessage = t.message
@@ -125,15 +143,16 @@ private fun Phase1Screen(database: SmartNodeDatabase) {
             Spacer(Modifier.height(20.dp))
 
             Text(
-                text = stringResource(R.string.phase_one_title),
+                text = stringResource(R.string.phase_two_title),
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary,
             )
             Text(
-                text = stringResource(R.string.phase_one_subtitle),
+                text = stringResource(R.string.phase_two_subtitle),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f),
+                textAlign = TextAlign.Center,
             )
 
             Spacer(Modifier.height(28.dp))
@@ -142,11 +161,16 @@ private fun Phase1Screen(database: SmartNodeDatabase) {
 
             Spacer(Modifier.height(16.dp))
 
+            if (status == DbStatus.Ready) {
+                CountsRow(identities = identityCount, assets = assetCount, logs = logCount)
+                Spacer(Modifier.height(16.dp))
+            }
+
             InfoChip(text = stringResource(R.string.security_aes_keystore))
             Spacer(Modifier.height(8.dp))
             InfoChip(text = stringResource(R.string.security_sqlcipher))
             Spacer(Modifier.height(8.dp))
-            InfoChip(text = stringResource(R.string.security_arch))
+            InfoChip(text = stringResource(R.string.flexible_schema_chip))
         }
     }
 }
@@ -188,6 +212,75 @@ private fun DbStatusCard(status: DbStatus, errorMessage: String?) {
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CountsRow(identities: Int, assets: Int, logs: Int) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        CountCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.count_identities),
+            value = identities,
+            icon = Icons.Filled.AccountBox,
+        )
+        CountCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.count_assets),
+            value = assets,
+            icon = Icons.Filled.Inventory2,
+        )
+        CountCard(
+            modifier = Modifier.weight(1f),
+            label = stringResource(R.string.count_logs),
+            value = logs,
+            icon = Icons.Filled.Receipt,
+        )
+    }
+}
+
+@Composable
+private fun CountCard(
+    modifier: Modifier = Modifier,
+    label: String,
+    value: Int,
+    icon: ImageVector,
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(14.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp),
+            )
+            Spacer(Modifier.height(4.dp))
+            Text(
+                text = value.toString(),
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+            Text(
+                text = label,
+                fontSize = 11.sp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                textAlign = TextAlign.Center,
+            )
         }
     }
 }
