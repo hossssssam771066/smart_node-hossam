@@ -2,24 +2,36 @@ package com.smartnode.app.data.local
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
-import com.smartnode.app.data.local.dao.SchemaProbeDao
-import com.smartnode.app.data.local.entity.SchemaProbeEntity
+import androidx.room.TypeConverters
+import com.smartnode.app.data.local.converter.Converters
+import com.smartnode.app.data.local.dao.AssetDao
+import com.smartnode.app.data.local.dao.IdentityDao
+import com.smartnode.app.data.local.dao.TransactionLogDao
+import com.smartnode.app.data.local.entity.AssetEntity
+import com.smartnode.app.data.local.entity.IdentityEntity
+import com.smartnode.app.data.local.entity.TransactionLogEntity
 
 /**
- * Single Room database for the entire app — encrypted at rest with SQLCipher.
- *
- * Phase 1 ships with a temporary [SchemaProbeEntity] so Room can generate a
- * schema and so we can verify the cipher pipeline works end-to-end. Real
- * entities (Identity, Asset, TransactionLog) will be added in Phase 2.
+ * Encrypted Room database (SQLCipher). Three tables:
+ *  - [IdentityEntity] : flexible per-card record, extras held in a JSON column.
+ *  - [AssetEntity]    : physical / logical assets keyed by their barcode.
+ *  - [TransactionLogEntity] : append-only audit log of every scan / action.
  */
 @Database(
-    entities = [SchemaProbeEntity::class],
+    entities = [
+        IdentityEntity::class,
+        AssetEntity::class,
+        TransactionLogEntity::class,
+    ],
     version = 1,
     exportSchema = true,
 )
+@TypeConverters(Converters::class)
 abstract class SmartNodeDatabase : RoomDatabase() {
 
-    internal abstract fun schemaProbeDao(): SchemaProbeDao
+    abstract fun identityDao(): IdentityDao
+    abstract fun assetDao(): AssetDao
+    abstract fun transactionLogDao(): TransactionLogDao
 
     companion object {
         const val NAME = "smart_node.db"

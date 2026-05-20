@@ -3,6 +3,9 @@ package com.smartnode.app.di
 import android.content.Context
 import androidx.room.Room
 import com.smartnode.app.data.local.SmartNodeDatabase
+import com.smartnode.app.data.local.dao.AssetDao
+import com.smartnode.app.data.local.dao.IdentityDao
+import com.smartnode.app.data.local.dao.TransactionLogDao
 import com.smartnode.app.data.security.DatabaseKeyManager
 import com.smartnode.app.data.security.KeystoreManager
 import dagger.Module
@@ -45,4 +48,16 @@ object DatabaseModule {
             .fallbackToDestructiveMigration()
             .build()
     }
+
+    @Provides
+    @Singleton
+    fun provideIdentityDao(db: SmartNodeDatabase): IdentityDao = db.identityDao()
+
+    @Provides
+    @Singleton
+    fun provideAssetDao(db: SmartNodeDatabase): AssetDao = db.assetDao()
+
+    @Provides
+    @Singleton
+    fun provideTransactionLogDao(db: SmartNodeDatabase): TransactionLogDao = db.transactionLogDao()
 }

@@ -3,10 +3,16 @@
     <string name="app_name">Smart Node</string>
     <string name="phase_one_title">Smart Node</string>
     <string name="phase_one_subtitle">المرحلة الأولى ـ النواة جاهزة</string>
+    <string name="phase_two_title">Smart Node</string>
+    <string name="phase_two_subtitle">المرحلة الثانية ـ مخطط مرن (هويَّات / أصول / سجلَّات)</string>
     <string name="db_status_loading">…جاري تهيئة قاعدة البيانات المُشفَّرة</string>
     <string name="db_status_ready">قاعدة البيانات المُشفَّرة جاهزة</string>
     <string name="db_status_error">تعذَّر فتح قاعدة البيانات</string>
     <string name="security_aes_keystore">AES-256-GCM في Android Keystore</string>
     <string name="security_sqlcipher">SQLCipher 4.5.4</string>
     <string name="security_arch">Clean Architecture · Offline-First</string>
+    <string name="flexible_schema_chip">مخطط مرن · JSON Attributes</string>
+    <string name="count_identities">الهويَّات</string>
+    <string name="count_assets">الأصول</string>
+    <string name="count_logs">السجلَّات</string>
 </resources>
