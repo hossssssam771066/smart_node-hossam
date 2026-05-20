@@ -15,4 +15,81 @@
     <string name="count_identities">الهويَّات</string>
     <string name="count_assets">الأصول</string>
     <string name="count_logs">السجلَّات</string>
+
+    <!-- Phase 3: Common -->
+    <string name="action_back">رجوع</string>
+    <string name="action_save">حفظ</string>
+    <string name="action_remove">حذف</string>
+
+    <!-- Phase 3: Home -->
+    <string name="home_hero_title">مرحبًا بك في Smart Node</string>
+    <string name="home_hero_subtitle">عدد الهويَّات المُسجَّلة: %1$d ـ التطبيق يعمل بدون اتصال</string>
+    <string name="home_quick_actions">إجراءات سريعة</string>
+    <string name="action_new_scan">مسح جديد</string>
+    <string name="action_new_scan_desc">افتح الكاميرا لمسح باركود أو NFC</string>
+    <string name="action_add_identity">إضافة هويَّة</string>
+    <string name="action_add_identity_desc">إنشاء سجل هويَّة بنموذج إدخال مرن</string>
+    <string name="action_browse_identities">عرض الهويَّات</string>
+    <string name="action_browse_identities_desc">بحث وتصفية في الهويَّات المُسجَّلة</string>
+    <string name="action_view_logs">السجلَّات</string>
+    <string name="action_view_logs_desc">آخر عمليَّات المسح والإجراءات</string>
+
+    <!-- Phase 3: Add Identity -->
+    <string name="screen_add_identity_title">إضافة هويَّة جديدة</string>
+    <string name="field_uid">UID (رمز فريد)</string>
+    <string name="field_card_type">نوع البطاقة</string>
+    <string name="field_holder_name">اسم حامل البطاقة</string>
+    <string name="field_primary_identifier">الرقم الأساسي (رقم عسكري / موظف / هويَّة)</string>
+    <string name="section_extra_attributes">حقول إضافيَّة (مرنة)</string>
+    <string name="section_extra_attributes_hint">يتم حفظ هذه الحقول داخل عمود JSON ـ بدون تعديل في مخطط القاعدة</string>
+    <string name="field_attr_key">المفتاح</string>
+    <string name="field_attr_value">القيمة</string>
+    <string name="action_add_attribute">إضافة حقل</string>
+    <string name="error_duplicate_uid">UID موجود بالفعل، اختر معرِّفًا فريدًا آخر</string>
+    <string name="error_uid_blank">حقل UID مطلوب</string>
+    <string name="error_holder_blank">اسم حامل البطاقة مطلوب</string>
+    <string name="error_primary_blank">الرقم الأساسي مطلوب</string>
+    <string name="error_storage">تعذَّر حفظ السجل</string>
+    <string name="success_identity_saved">تم حفظ الهويَّة بنجاح</string>
+
+    <!-- Phase 3: Identities list -->
+    <string name="screen_identities_title">الهويَّات</string>
+    <string name="identities_search_hint">ابحث بالاسم أو الرقم الأساسي</string>
+    <string name="identities_count_label">العدد الكلِّي: %1$d</string>
+    <string name="identities_empty_title">لا توجد هويَّات حتى الآن</string>
+    <string name="identities_empty_subtitle">اضغط (إضافة هويَّة) لإنشاء أوَّل سجل</string>
+    <string name="identities_empty_search_title">لا نتائج</string>
+    <string name="identities_empty_search_subtitle">لم نجد أي هويَّة تطابق: %1$s</string>
+    <string name="identity_row_subtitle">%1$s · %2$s</string>
+
+    <!-- Phase 3: Scanner -->
+    <string name="screen_scanner_title">ماسح الباركود</string>
+    <string name="scanner_idle_title">وجِّه الكاميرا إلى الباركود</string>
+    <string name="scanner_idle_subtitle">يعمل المسح بدون اتصال بالإنترنت</string>
+    <string name="scanner_processing_title">…جاري المعالجة</string>
+    <string name="scanner_result_matched_title">تمَّ التعرُّف على الأصل</string>
+    <string name="scanner_result_matched_body">%1$s ـ الكود: %2$s</string>
+    <string name="scanner_result_registered_title">تمَّ تسجيل أصل جديد</string>
+    <string name="scanner_result_registered_body">الكود: %1$s</string>
+    <string name="scanner_result_nfc_title">تمَّ قراءة NFC</string>
+    <string name="scanner_result_nfc_body">UID: %1$s</string>
+    <string name="scanner_scan_again">مسح آخر</string>
+    <string name="scanner_error_empty">قيمة الباركود فارغة</string>
+    <string name="scanner_error_generic">تعذَّر إكمال العمليَّة</string>
+    <string name="scanner_permission_title">الكاميرا غير مفعَّلة</string>
+    <string name="scanner_permission_subtitle">نحتاج الكاميرا لمسح الباركود محليًّا داخل التطبيق</string>
+    <string name="scanner_permission_rationale">الكاميرا تُستخدم فقط لقراءة الباركود ولا تُرسل أي بيانات للإنترنت</string>
+    <string name="scanner_permission_grant">منح صلاحية الكاميرا</string>
+
+    <!-- Phase 3: Logs -->
+    <string name="screen_logs_title">سجلَّات العمليَّات</string>
+    <string name="logs_empty_title">لا توجد عمليَّات بعد</string>
+    <string name="logs_empty_subtitle">ستظهر هنا عمليَّات المسح والإجراءات تلقائيًّا</string>
+    <string name="logs_no_payload">—</string>
+    <string name="action_type_identity_scan">مسح هويَّة</string>
+    <string name="action_type_asset_scan">مسح أصل</string>
+    <string name="action_type_handover">تسليم</string>
+    <string name="action_type_return">إرجاع</string>
+    <string name="action_type_check_in">دخول</string>
+    <string name="action_type_check_out">خروج</string>
 </resources>

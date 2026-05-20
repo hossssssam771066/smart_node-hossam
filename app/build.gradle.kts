@@ -113,6 +113,21 @@ dependencies {
     // Serialization (JSON for flexible identity attributes)
     implementation(libs.kotlinx.serialization.json)
 
+    // Navigation
+    implementation(libs.androidx.navigation.compose)
+
+    // CameraX (preview + analysis pipeline for the offline barcode scanner)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    // ML Kit barcode (bundled — offline, no Play Services download)
+    implementation(libs.mlkit.barcode.scanning)
+
+    // Compose runtime permission flow
+    implementation(libs.accompanist.permissions)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.junit)
